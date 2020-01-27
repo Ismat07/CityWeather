@@ -18,36 +18,30 @@ import java.util.ArrayList;
 
 public class CitiesAdapter extends RecyclerView.Adapter<CitiesAdapter.CityViewHolder> {
 
-    private ArrayList<City> cities;
+    private ArrayList<City> cityArrayList= new ArrayList<>();
     private Intent intent;
     private Context context;
-    private RecyclerView recyclerView;
-
-    public CitiesAdapter(RecyclerView recyclerView, ArrayList<City> cities) {
-        this.cities = cities;
-        this.recyclerView = recyclerView;
-    }
-
-//    public CitiesAdapter(ArrayList<City> cities, Context context) {
-//        this.cities = cities;
-//        this.context = context;
-//    }
 
     @NonNull
     @Override
-    public CitiesAdapter.CityViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public CityViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_layout, parent, false);
         return new CityViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CitiesAdapter.CityViewHolder holder, int position) {
-        holder.textView.setText(cities.get(position).getName());
+    public void onBindViewHolder(@NonNull CityViewHolder holder, int position) {
+        holder.textView.setText(cityArrayList.get(position).getName());
     }
 
     @Override
     public int getItemCount() {
-        return cities.size();
+        return cityArrayList.size();
+    }
+
+    public void setList(ArrayList<City> cityArrayList){
+        this.cityArrayList = cityArrayList  ;
+        notifyDataSetChanged();
     }
 
     public class CityViewHolder extends RecyclerView.ViewHolder{
@@ -63,7 +57,7 @@ public class CitiesAdapter extends RecyclerView.Adapter<CitiesAdapter.CityViewHo
                 public void onClick(View view) {
                     context = view.getContext();
                     intent = new Intent(context,WeatherActivity.class);
-                    intent.putExtra("cityname",cities.get(getAdapterPosition()).getName());
+                    intent.putExtra("cityname",cityArrayList.get(getAdapterPosition()).getName());
                     context.startActivity(intent);
                 }
             });
