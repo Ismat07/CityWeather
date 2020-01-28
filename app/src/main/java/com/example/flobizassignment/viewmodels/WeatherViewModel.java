@@ -6,48 +6,45 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.flobizassignment.model.weather.Weather;
-import com.example.flobizassignment.model.weather.WeatherApi;
+import com.example.flobizassignment.model.weather.WeatherClient;
 import com.example.flobizassignment.model.weather.WeatherJSONResponse;
+import com.example.flobizassignment.model.weather.WeatherList;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class WeatherViewModel extends ViewModel {
 
-    private MutableLiveData<Weather> weather;
-    private ArrayList<Weather> weatherArrayList;
+    private MutableLiveData<ArrayList<WeatherList>> arrayListMutableLiveData;
+    private ArrayList<WeatherList> weatherArrayList;
 
-    public LiveData<Weather> getWeather() {
-        if (weather == null) {
-            weather = new MutableLiveData<Weather>();
+    public LiveData<ArrayList<WeatherList>> getWeather() {
+        if (arrayListMutableLiveData == null) {
+            arrayListMutableLiveData = new MutableLiveData<>();
             loadWeather();
         }
-        return weather;
+        return arrayListMutableLiveData;
     }
 
-    private void loadWeather() {
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(WeatherApi.Weather_URL).addConverterFactory(GsonConverterFactory.create()).build();
-        WeatherApi api = retrofit.create(WeatherApi.class);
-        Call<List<WeatherJSONResponse>> call = api.getWeatherJSON();
-
-        call.enqueue(new Callback<List<WeatherJSONResponse>>() {
+    public void loadWeather() {
+        WeatherClient.getINSTANCE().getWeatherJSON().enqueue(new Callback<List<WeatherJSONResponse>>() {
             @Override
             public void onResponse(Call<List<WeatherJSONResponse>> call, Response<List<WeatherJSONResponse>> response) {
                 List<WeatherJSONResponse> weatherJSONResponse = response.body();
-                //weatherArrayList = new ArrayList<>(Arrays.asList(weatherJSONResponse.get(0).getWeather()));
+
+                weatherArrayList = new ArrayList<>(Arrays.asList(weatherJSONResponse.get(3).getWeather()));
                 System.out.println("weatherArrayList ="+weatherArrayList);
+                arrayListMutableLiveData.setValue(weatherArrayList);
             }
 
             @Override
             public void onFailure(Call<List<WeatherJSONResponse>> call, Throwable t) {
-                Log.d("Error",t.getMessage());
+                Log.d("Error....",t.getMessage());
             }
         });
     }
